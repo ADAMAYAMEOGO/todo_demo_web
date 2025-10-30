@@ -21,6 +21,7 @@
 
       <main class="app-main">
         <div class="todo-container">
+          <Dashboard v-if="stats" :stats="stats" />
           <TodoForm @created="onTodoCreated" />
           <Filters />
           <TodoList />
@@ -49,6 +50,7 @@ import ThemeToggle from './components/ThemeToggle.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 import LoginForm from './components/LoginForm.vue'
 import UserMenu from './components/UserMenu.vue'
+import Dashboard from './components/Dashboard.vue'
 
 const todoStore = useTodoStore()
 const authStore = useAuthStore()
