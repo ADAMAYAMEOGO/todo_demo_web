@@ -278,17 +278,22 @@ function getTags(tagsString) {
 
 <style scoped>
 .todo-item {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px var(--shadow);
   transition: var(--transition);
   border-left: 4px solid var(--primary);
   animation: slideIn 0.3s ease;
 }
 
+.dark-mode .todo-item {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+}
+
 .todo-item:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 25px var(--shadow-lg);
   transform: translateX(5px);
 }
 
@@ -299,7 +304,14 @@ function getTags(tagsString) {
 
 .todo-item.favorite {
   border-left-color: var(--secondary);
+}
+
+.todo-item.favorite:not(.dark-mode .todo-item.favorite) {
   background: linear-gradient(135deg, white 0%, #fef3f8 100%);
+}
+
+.dark-mode .todo-item.favorite {
+  background: linear-gradient(135deg, var(--card-bg) 0%, #2d1f2a 100%);
 }
 
 .todo-item.urgent {
@@ -307,8 +319,12 @@ function getTags(tagsString) {
   animation: pulse 2s ease infinite;
 }
 
-.todo-item.overdue {
+.todo-item.overdue:not(.dark-mode .todo-item.overdue) {
   background: linear-gradient(135deg, white 0%, #fef2f2 100%);
+}
+
+.dark-mode .todo-item.overdue {
+  background: linear-gradient(135deg, var(--card-bg) 0%, #2d1f1f 100%);
 }
 
 .todo-main {
@@ -339,7 +355,7 @@ function getTags(tagsString) {
   height: 24px;
   border: 2px solid var(--primary);
   border-radius: 6px;
-  background: white;
+  background: var(--card-bg);
   transition: var(--transition);
   pointer-events: none;
 }
@@ -503,7 +519,7 @@ function getTags(tagsString) {
 }
 
 .edit-content {
-  background: white;
+  background: var(--card-bg);
   border-radius: 20px;
   padding: 2rem;
   max-width: 500px;
@@ -511,6 +527,10 @@ function getTags(tagsString) {
   max-height: 90vh;
   overflow-y: auto;
   animation: scaleIn 0.3s var(--bounce);
+}
+
+.dark-mode .edit-content {
+  border: 1px solid var(--border);
 }
 
 .edit-title {

@@ -93,9 +93,13 @@ async function handleDeleteCompleted() {
   align-items: center;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+.dark-mode .list-header {
+  border: 1px solid var(--border);
 }
 
 .list-title {
@@ -142,9 +146,14 @@ async function handleDeleteCompleted() {
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+.dark-mode .loading-state,
+.dark-mode .empty-state {
+  border: 1px solid var(--border);
 }
 
 .loading-state {

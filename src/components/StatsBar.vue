@@ -52,7 +52,7 @@ defineProps({
 }
 
 .stat-card {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 4px 6px var(--shadow);
@@ -62,6 +62,11 @@ defineProps({
   transition: var(--transition);
   border-left: 4px solid var(--primary);
   animation: scaleIn 0.5s var(--bounce);
+}
+
+.dark-mode .stat-card {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
 }
 
 .stat-card:nth-child(1) {

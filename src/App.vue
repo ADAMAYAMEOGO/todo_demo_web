@@ -1,5 +1,7 @@
 <template>
   <div class="app-container">
+    <ThemeToggle />
+    
     <header class="app-header">
       <div class="header-content">
         <h1 class="app-title">
@@ -36,6 +38,7 @@ import TodoForm from './components/TodoForm.vue'
 import TodoList from './components/TodoList.vue'
 import Filters from './components/Filters.vue'
 import StatsBar from './components/StatsBar.vue'
+import ThemeToggle from './components/ThemeToggle.vue'
 
 const store = useTodoStore()
 const stats = computed(() => store.stats)
@@ -64,12 +67,16 @@ function onTodoCreated() {
 }
 
 .header-content {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 40px var(--shadow);
   margin-bottom: 2rem;
   transition: var(--transition);
+}
+
+.dark-mode .header-content {
+  border: 1px solid var(--border);
 }
 
 .header-content:hover {

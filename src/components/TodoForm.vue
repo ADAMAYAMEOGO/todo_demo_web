@@ -150,15 +150,19 @@ async function handleSubmit() {
 }
 
 .todo-form {
-  background: white;
+  background: var(--card-bg);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px var(--shadow);
   transition: var(--transition);
 }
 
+.dark-mode .todo-form {
+  border: 1px solid var(--border);
+}
+
 .todo-form:hover {
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 50px var(--shadow-lg);
 }
 
 .form-header {

@@ -159,15 +159,19 @@ function clearFilters() {
 }
 
 .filters-card {
-  background: white;
+  background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px var(--shadow);
   transition: var(--transition);
 }
 
+.dark-mode .filters-card {
+  border: 1px solid var(--border);
+}
+
 .filters-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 30px var(--shadow-lg);
 }
 
 .filters-header {

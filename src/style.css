@@ -15,10 +15,40 @@
   --border: #cbd5e1;
   --shadow: rgba(0, 0, 0, 0.1);
   --shadow-lg: rgba(0, 0, 0, 0.2);
+  --bg-gradient-start: #667eea;
+  --bg-gradient-end: #764ba2;
+  --card-bg: #ffffff;
   
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.15s ease;
   --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+  --primary: #818cf8;
+  --primary-dark: #6366f1;
+  --primary-light: #a5b4fc;
+  --secondary: #f472b6;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --dark: #f1f5f9;
+  --dark-light: #e2e8f0;
+  --light: #1e293b;
+  --light-dark: #334155;
+  --text: #f1f5f9;
+  --text-light: #94a3b8;
+  --border: #475569;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-lg: rgba(0, 0, 0, 0.5);
+  --bg-gradient-start: #1e293b;
+  --bg-gradient-end: #0f172a;
+  --card-bg: #1e293b;
+}
+
+.dark-mode body {
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
 }
 
 * {
@@ -29,10 +59,11 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   min-height: 100vh;
   color: var(--text);
   line-height: 1.6;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 #app {
@@ -206,7 +237,7 @@ input:focus, textarea:focus, select:focus {
 
 /* Card Base */
 .card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px var(--shadow);
@@ -216,6 +247,11 @@ input:focus, textarea:focus, select:focus {
 .card:hover {
   box-shadow: 0 10px 20px var(--shadow-lg);
   transform: translateY(-2px);
+}
+
+/* Dark mode card borders */
+.dark-mode .card {
+  border: 1px solid var(--border);
 }
 
 /* Badge */
