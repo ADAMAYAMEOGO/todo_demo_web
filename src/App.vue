@@ -1,55 +1,73 @@
 <template>
   <div class="app-container">
-    <ThemeToggle />
-    <InstallPrompt />
+    <LoginForm v-if="!isAuthenticated" @login-success="handleLoginSuccess" />
     
-    <header class="app-header">
-      <div class="header-content">
-        <h1 class="app-title">
-          <span class="emoji">✨</span>
-          Ma Todo List
-          <span class="emoji">✨</span>
-        </h1>
-        <p class="app-subtitle">Gérez vos tâches avec style</p>
-      </div>
-      <StatsBar v-if="stats" :stats="stats" />
-    </header>
+    <template v-else>
+      <ThemeToggle />
+      <InstallPrompt />
+      <UserMenu />
+      
+      <header class="app-header">
+        <div class="header-content">
+          <h1 class="app-title">
+            <span class="emoji">✨</span>
+            Ma Todo List
+            <span class="emoji">✨</span>
+          </h1>
+          <p class="app-subtitle">Gérez vos tâches avec style</p>
+        </div>
+        <StatsBar v-if="stats" :stats="stats" />
+      </header>
 
-    <main class="app-main">
-      <div class="todo-container">
-        <TodoForm @created="onTodoCreated" />
-        <Filters />
-        <TodoList />
-      </div>
-    </main>
+      <main class="app-main">
+        <div class="todo-container">
+          <TodoForm @created="onTodoCreated" />
+          <Filters />
+          <TodoList />
+        </div>
+      </main>
 
-    <Transition name="fade">
-      <div v-if="error" class="error-toast" @click="error = null">
-        <span class="emoji">⚠️</span>
-        {{ error }}
-      </div>
-    </Transition>
+      <Transition name="fade">
+        <div v-if="error" class="error-toast" @click="error = null">
+          <span class="emoji">⚠️</span>
+          {{ error }}
+        </div>
+      </Transition>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { onMounted, computed } from 'vue'
 import { useTodoStore } from './stores/todoStore'
+import { useAuthStore } from './stores/authStore'
 import TodoForm from './components/TodoForm.vue'
 import TodoList from './components/TodoList.vue'
 import Filters from './components/Filters.vue'
 import StatsBar from './components/StatsBar.vue'
 import ThemeToggle from './components/ThemeToggle.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+import LoginForm from './components/LoginForm.vue'
+import UserMenu from './components/UserMenu.vue'
 
-const store = useTodoStore()
-const stats = computed(() => store.stats)
-const error = computed(() => store.error)
+const todoStore = useTodoStore()
+const authStore = useAuthStore()
+const stats = computed(() => todoStore.stats)
+const error = computed(() => todoStore.error)
+const isAuthenticated = computed(() => authStore.isAuthenticated)
 
 onMounted(async () => {
-  await store.fetchTodos()
-  await store.fetchStats()
+  await authStore.checkAuth()
+  if (authStore.isAuthenticated) {
+    await todoStore.fetchTodos()
+    await todoStore.fetchStats()
+  }
 })
+
+async function handleLoginSuccess() {
+  await todoStore.fetchTodos()
+  await todoStore.fetchStats()
+}
 
 function onTodoCreated() {
   // Animation or feedback
