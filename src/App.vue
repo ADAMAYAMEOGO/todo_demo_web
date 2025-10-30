@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <ThemeToggle />
+    <InstallPrompt />
     
     <header class="app-header">
       <div class="header-content">
@@ -39,6 +40,7 @@ import TodoList from './components/TodoList.vue'
 import Filters from './components/Filters.vue'
 import StatsBar from './components/StatsBar.vue'
 import ThemeToggle from './components/ThemeToggle.vue'
+import InstallPrompt from './components/InstallPrompt.vue'
 
 const store = useTodoStore()
 const stats = computed(() => store.stats)
