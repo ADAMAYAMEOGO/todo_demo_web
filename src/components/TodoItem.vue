@@ -5,10 +5,15 @@
       completed: todo.completed,
       favorite: todo.favorite,
       urgent: todo.priority === 'urgent',
-      overdue: isOverdue
+      overdue: isOverdue,
+      'drag-enabled': dragEnabled
     }"
   >
     <div class="todo-main">
+      <div v-if="dragEnabled" class="drag-handle" title="Glisser pour réorganiser">
+        <span class="emoji">⋮⋮</span>
+      </div>
+      
       <div class="todo-checkbox">
         <input
           type="checkbox"
@@ -174,6 +179,10 @@ const props = defineProps({
   todo: {
     type: Object,
     required: true
+  },
+  dragEnabled: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -325,6 +334,30 @@ function getTags(tagsString) {
 
 .dark-mode .todo-item.overdue {
   background: linear-gradient(135deg, var(--card-bg) 0%, #2d1f1f 100%);
+}
+
+.drag-handle {
+  cursor: move;
+  padding: 0.5rem;
+  color: var(--text-light);
+  font-size: 1.2rem;
+  transition: var(--transition);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.drag-handle:hover {
+  color: var(--primary);
+  transform: scale(1.2);
+}
+
+.todo-item.drag-enabled {
+  cursor: move;
+}
+
+.todo-item.drag-enabled:hover .drag-handle {
+  color: var(--primary);
 }
 
 .todo-main {

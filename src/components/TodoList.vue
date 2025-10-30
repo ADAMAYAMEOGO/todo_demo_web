@@ -7,14 +7,28 @@
         <span class="count-badge">{{ todos.length }}</span>
       </h2>
       
-      <button
-        v-if="hasCompleted"
-        @click="handleDeleteCompleted"
-        class="delete-completed-btn"
-      >
-        <span class="emoji">🗑️</span>
-        Supprimer terminées
-      </button>
+      <div class="header-actions">
+        <label class="drag-toggle">
+          <input
+            v-model="dragEnabled"
+            type="checkbox"
+            class="checkbox"
+          />
+          <span class="checkbox-text">
+            <span class="emoji">🖱️</span>
+            Réorganiser
+          </span>
+        </label>
+        
+        <button
+          v-if="hasCompleted"
+          @click="handleDeleteCompleted"
+          class="delete-completed-btn"
+        >
+          <span class="emoji">🗑️</span>
+          Supprimer terminées
+        </button>
+      </div>
     </div>
 
     <div v-if="loading && todos.length === 0" class="loading-state">
@@ -28,34 +42,57 @@
       <p>Ajoutez votre première tâche ci-dessus !</p>
     </div>
 
-    <TransitionGroup
+    <draggable
       v-else
-      name="list"
+      v-model="localTodos"
+      :disabled="!dragEnabled"
+      @end="handleDragEnd"
       tag="div"
       class="todo-list"
+      :class="{ 'drag-enabled': dragEnabled }"
+      item-key="id"
+      :animation="200"
+      ghost-class="ghost"
+      handle=".drag-handle"
     >
-      <TodoItem
-        v-for="todo in todos"
-        :key="todo.id"
-        :todo="todo"
-        @toggle="handleToggle"
-        @delete="handleDelete"
-        @update="handleUpdate"
-        @toggle-favorite="handleToggleFavorite"
-      />
-    </TransitionGroup>
+      <template #item="{ element }">
+        <TodoItem
+          :todo="element"
+          :drag-enabled="dragEnabled"
+          @toggle="handleToggle"
+          @delete="handleDelete"
+          @update="handleUpdate"
+          @toggle-favorite="handleToggleFavorite"
+        />
+      </template>
+    </draggable>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useTodoStore } from '../stores/todoStore'
 import TodoItem from './TodoItem.vue'
+import draggable from 'vuedraggable'
 
 const store = useTodoStore()
 const todos = computed(() => store.todos)
 const loading = computed(() => store.loading)
 const hasCompleted = computed(() => todos.value.some(t => t.completed))
+const dragEnabled = ref(false)
+
+const localTodos = computed({
+  get: () => todos.value,
+  set: (value) => {
+    // This will be updated when drag ends
+  }
+})
+
+async function handleDragEnd(event) {
+  if (dragEnabled.value) {
+    await store.reorderTodos(localTodos.value)
+  }
+}
 
 async function handleToggle(id) {
   await store.toggleTodo(id)
@@ -96,10 +133,50 @@ async function handleDeleteCompleted() {
   background: var(--card-bg);
   border-radius: 16px;
   box-shadow: 0 2px 10px var(--shadow);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .dark-mode .list-header {
   border: 1px solid var(--border);
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.drag-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--light);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.drag-toggle:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.drag-toggle .checkbox-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.drag-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
 .list-title {
@@ -186,14 +263,28 @@ async function handleDeleteCompleted() {
   gap: 1rem;
 }
 
+.todo-list.drag-enabled {
+  cursor: move;
+}
+
+.todo-list .ghost {
+  opacity: 0.4;
+  background: var(--primary-light);
+  transform: rotate(2deg);
+}
+
 @media (max-width: 768px) {
   .list-header {
     flex-direction: column;
-    gap: 1rem;
     align-items: stretch;
   }
   
-  .delete-completed-btn {
+  .header-actions {
+    flex-direction: column;
+  }
+  
+  .delete-completed-btn,
+  .drag-toggle {
     justify-content: center;
   }
 }

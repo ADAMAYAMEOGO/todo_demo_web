@@ -150,6 +150,17 @@ export const useTodoStore = defineStore('todo', () => {
     }
   }
 
+  async function reorderTodos(newOrder) {
+    try {
+      const todoIds = newOrder.map(t => t.id)
+      await todoApi.reorderTodos(todoIds)
+      todos.value = newOrder
+    } catch (err) {
+      error.value = err.message
+      throw err
+    }
+  }
+
   function setFilter(key, value) {
     filters.value[key] = value
     fetchTodos()
@@ -190,6 +201,7 @@ export const useTodoStore = defineStore('todo', () => {
     toggleTodo,
     toggleFavorite,
     deleteCompleted,
+    reorderTodos,
     setFilter,
     clearFilters
   }

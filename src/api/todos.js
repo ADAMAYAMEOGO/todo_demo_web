@@ -55,5 +55,11 @@ export const todoApi = {
   async deleteCompleted() {
     const response = await axios.delete(`${API_URL}/todos`)
     return response.data
+  },
+
+  // Reorder todos
+  async reorderTodos(todoIds) {
+    const response = await axios.post(`${API_URL}/todos/reorder`, todoIds)
+    return response.data
   }
 }
