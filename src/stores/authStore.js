@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
-
-const API_URL = '/api'
+import apiClient from '../api/axios'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -24,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
       formData.append('username', username)
       formData.append('password', password)
       
-      const response = await axios.post(`${API_URL}/token`, formData, {
+      const response = await apiClient.post('/token', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -35,8 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('token', token.value)
       localStorage.setItem('user', JSON.stringify(user.value))
       
-      // Set default axios auth header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
+      // Token sera automatiquement ajouté par l'intercepteur
       
       return true
     } catch (err) {
@@ -52,7 +49,6 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    delete axios.defaults.headers.common['Authorization']
   }
 
   async function checkAuth() {
@@ -62,11 +58,10 @@ export const useAuthStore = defineStore('auth', () => {
     if (savedToken && savedUser) {
       token.value = savedToken
       user.value = JSON.parse(savedUser)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`
       
       // Verify token is still valid
       try {
-        await axios.get(`${API_URL}/users/me`)
+        await apiClient.get('/users/me')
         return true
       } catch (err) {
         await logout()
@@ -76,12 +71,9 @@ export const useAuthStore = defineStore('auth', () => {
     return false
   }
 
-  // Initialize auth on store creation
-  if (token.value) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
-    if (localStorage.getItem('user')) {
-      user.value = JSON.parse(localStorage.getItem('user'))
-    }
+  // Initialize user from localStorage
+  if (token.value && localStorage.getItem('user')) {
+    user.value = JSON.parse(localStorage.getItem('user'))
   }
 
   return {

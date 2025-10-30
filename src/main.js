@@ -1,7 +1,14 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import axios from 'axios'
 import App from './App.vue'
 import './style.css'
+
+// Configure axios with token from localStorage
+const token = localStorage.getItem('token')
+if (token) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+}
 
 const app = createApp(App)
 const pinia = createPinia()
