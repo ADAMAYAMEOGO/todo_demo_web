@@ -8,6 +8,11 @@
       </h2>
       
       <div class="header-actions">
+        <button @click="showKanban = true" class="kanban-btn">
+          <span class="emoji">🎯</span>
+          Vue Kanban
+        </button>
+        
         <label class="drag-toggle">
           <input
             v-model="dragEnabled"
@@ -31,6 +36,15 @@
       </div>
     </div>
 
+    <!-- Kanban View -->
+    <KanbanView
+      v-if="showKanban"
+      :todos="todos"
+      @update="handleKanbanUpdate"
+      @edit="handleEdit"
+      @close="showKanban = false"
+    />
+
     <div v-if="loading && todos.length === 0" class="loading-state">
       <div class="spinner"></div>
       <p>Chargement...</p>
@@ -43,7 +57,7 @@
     </div>
 
     <draggable
-      v-else
+      v-else-if="!showKanban"
       v-model="localTodos"
       :disabled="!dragEnabled"
       @end="handleDragEnd"
@@ -73,6 +87,7 @@
 import { ref, computed } from 'vue'
 import { useTodoStore } from '../stores/todoStore'
 import TodoItem from './TodoItem.vue'
+import KanbanView from './KanbanView.vue'
 import draggable from 'vuedraggable'
 
 const store = useTodoStore()
@@ -80,6 +95,7 @@ const todos = computed(() => store.todos)
 const loading = computed(() => store.loading)
 const hasCompleted = computed(() => todos.value.some(t => t.completed))
 const dragEnabled = ref(false)
+const showKanban = ref(false)
 
 const localTodos = computed({
   get: () => todos.value,
@@ -116,6 +132,20 @@ async function handleDeleteCompleted() {
   if (confirm('Supprimer toutes les tâches terminées ?')) {
     await store.deleteCompleted()
   }
+}
+
+async function handleKanbanUpdate(updatedTodos) {
+  // Update all todos with their new completion status
+  for (const todo of updatedTodos) {
+    if (todo.completed !== todos.value.find(t => t.id === todo.id)?.completed) {
+      await store.updateTodo(todo.id, { completed: todo.completed })
+    }
+  }
+}
+
+function handleEdit(todo) {
+  // Implement edit functionality or emit to parent
+  console.log('Edit todo:', todo)
 }
 </script>
 
@@ -177,6 +207,25 @@ async function handleDeleteCompleted() {
   width: 18px;
   height: 18px;
   cursor: pointer;
+}
+
+.kanban-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.kanban-btn:hover {
+  background: #d946a6;
+  transform: translateY(-2px);
 }
 
 .list-title {
