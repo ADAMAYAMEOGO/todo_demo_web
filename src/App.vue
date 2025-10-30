@@ -31,6 +31,13 @@
           <TodoList ref="todoListRef" />
         </div>
       </main>
+      
+      <AchievementsPanel />
+      <CelebrationToast
+        :message="celebrationMessage"
+        :newAchievement="celebrationAchievement"
+        :isAllComplete="isAllComplete"
+      />
 
       <Transition name="fade">
         <div v-if="error" class="error-toast" @click="error = null">
@@ -60,6 +67,8 @@ import LoginForm from './components/LoginForm.vue'
 import UserMenu from './components/UserMenu.vue'
 import Dashboard from './components/Dashboard.vue'
 import ShortcutsHelp from './components/ShortcutsHelp.vue'
+import AchievementsPanel from './components/AchievementsPanel.vue'
+import CelebrationToast from './components/CelebrationToast.vue'
 
 const todoStore = useTodoStore()
 const authStore = useAuthStore()
@@ -73,6 +82,25 @@ const dashboardRef = ref(null)
 const todoFormRef = ref(null)
 const filtersRef = ref(null)
 const todoListRef = ref(null)
+
+// Celebration state
+const celebrationMessage = ref('')
+const celebrationAchievement = ref(null)
+const isAllComplete = ref(false)
+
+// Celebration callback
+function handleCelebration({ message, newAchievement, isAllComplete: allComplete }) {
+  celebrationMessage.value = message
+  celebrationAchievement.value = newAchievement
+  isAllComplete.value = allComplete
+  
+  // Reset after display
+  setTimeout(() => {
+    celebrationMessage.value = ''
+    celebrationAchievement.value = null
+    isAllComplete.value = false
+  }, allComplete ? 5000 : 3000)
+}
 
 // Setup keyboard shortcuts
 useKeyboardShortcuts({
@@ -105,12 +133,16 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await todoStore.fetchTodos()
     await todoStore.fetchStats()
+    // Set celebration callback
+    todoStore.setCelebrationCallback(handleCelebration)
   }
 })
 
 async function handleLoginSuccess() {
   await todoStore.fetchTodos()
   await todoStore.fetchStats()
+  // Set celebration callback
+  todoStore.setCelebrationCallback(handleCelebration)
 }
 
 function onTodoCreated() {

@@ -1,8 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { todoApi } from '../api/todos'
+import { useGamification } from '../composables/useGamification'
 
 export const useTodoStore = defineStore('todo', () => {
+  const { onTaskCompleted, onAllTasksComplete } = useGamification()
+  
+  // Celebration callback
+  const celebrationCallback = ref(null)
+  
   // State
   const todos = ref([])
   const stats = ref(null)
@@ -110,16 +116,49 @@ export const useTodoStore = defineStore('todo', () => {
 
   async function toggleTodo(id) {
     try {
+      const todo = todos.value.find(t => t.id === id)
+      if (!todo) return
+      
+      const wasCompleted = todo.completed
       const updated = await todoApi.toggleTodo(id)
       const index = todos.value.findIndex(t => t.id === id)
       if (index !== -1) {
         todos.value[index] = updated
+        
+        // Check if task was just completed
+        if (!wasCompleted && updated.completed) {
+          const result = onTaskCompleted()
+          
+          // Check if all tasks are now complete
+          const allComplete = todos.value.length > 0 && todos.value.every(t => t.completed)
+          if (allComplete) {
+            const allCompleteResult = onAllTasksComplete()
+            if (celebrationCallback.value) {
+              celebrationCallback.value({
+                ...allCompleteResult,
+                isAllComplete: true
+              })
+            }
+          } else {
+            if (celebrationCallback.value) {
+              celebrationCallback.value({
+                message: result.message,
+                newAchievement: result.newAchievements[0],
+                isAllComplete: false
+              })
+            }
+          }
+        }
       }
       await fetchStats()
     } catch (err) {
       error.value = err.message
       throw err
     }
+  }
+
+  function setCelebrationCallback(callback) {
+    celebrationCallback.value = callback
   }
 
   async function toggleFavorite(id) {
@@ -203,6 +242,7 @@ export const useTodoStore = defineStore('todo', () => {
     deleteCompleted,
     reorderTodos,
     setFilter,
-    clearFilters
+    clearFilters,
+    setCelebrationCallback
   }
 })
